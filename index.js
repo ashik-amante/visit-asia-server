@@ -11,7 +11,7 @@ app.use(express.json())
 // visitAsia
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = "mongodb+srv://visitAsia:gFeVjvrweu50U7Xb@cluster0.pdx5h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -28,16 +28,31 @@ async function run() {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
 
-        app.post('/spots',(req,res)=>{
+        
+        const spotsCollection =  client.db("spotsDB").collection("spots");
+
+        // get All data in db
+        app.get('/spots',async(req,res)=>{
             const spots = req.body
             console.log(spots);
-            // res.send(spots)
+            const cursor = spotsCollection.find()
+            const result = await cursor.toArray()
+            res.send(result)
         })
-        app.get('/spots',(req,res)=>{
-            const spots = req.body
-            console.log(spots);
-            // res.send(spots)
+        // get specific id data from db
+        app.get('/spots/:id',async(req,res)=>{
+            const id = req.params.id;
+            const user = {_id: new ObjectId(id)}
+            const result =await spotsCollection.findOne(user)
+            res.send(result)
         })
+        app.post('/spots',async(req,res)=>{
+            const spot = req.body
+            console.log(spot);
+            const result = await spotsCollection.insertOne(spot)
+            res.send(result)
+        })
+      
 
 
         // Send a ping to confirm a successful connection
