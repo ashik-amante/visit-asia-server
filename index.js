@@ -33,8 +33,8 @@ async function run() {
 
         // get All data in db
         app.get('/spots',async(req,res)=>{
-            const spots = req.body
-            console.log(spots);
+            // const spots = req.body
+            // console.log(spots);
             const cursor = spotsCollection.find()
             const result = await cursor.toArray()
             res.send(result)
@@ -50,6 +50,15 @@ async function run() {
             const spot = req.body
             console.log(spot);
             const result = await spotsCollection.insertOne(spot)
+            res.send(result)
+        })
+
+        // get email data in mylist
+        app.get('/spots/:email',async(req,res)=>{
+            const searchEmail = req.params.email;
+            const quary= {email:searchEmail } 
+            const cursor = spotsCollection.find(quary)
+            const result  = await cursor.toArray()
             res.send(result)
         })
       
